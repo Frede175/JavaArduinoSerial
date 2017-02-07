@@ -2,6 +2,7 @@ package com.fredtec;
 
 import com.fredtec.arduino.Servo;
 import com.fredtec.arduino.Stepper;
+import org.apache.batik.dom.svg.SVGOMPoint;
 import org.w3c.dom.svg.SVGPoint;
 
 import java.util.ArrayList;
@@ -78,6 +79,9 @@ public class Head implements Runnable {
 			}
 		}
 		penUp();
+		//Going to start pos!
+		gotoPoint(new SVGOMPoint(0,0));
+		isRunning = false;
 	}
 	
 	private void gotoPoint(SVGPoint point) {
