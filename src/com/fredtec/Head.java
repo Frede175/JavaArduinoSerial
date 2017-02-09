@@ -190,6 +190,10 @@ public class Head implements Runnable {
 	}
 	
 	private boolean waitForSuspend() {
+		
+		System.out.println(Main.arduino.analogRead(0));
+		
+		
 		synchronized (this) {
 			while (suspended) try {
 				wait();

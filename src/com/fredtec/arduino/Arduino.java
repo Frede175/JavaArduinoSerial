@@ -2,15 +2,14 @@ package com.fredtec.arduino;
 
 import gnu.io.*;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.Enumeration;
 import java.util.TooManyListenersException;
 
 /**
  * Created by fsr19 on 2/3/2017.
  */
-public class Arduino implements SerialPortEventListener {
+public class Arduino /* implements SerialPortEventListener  */{
 	
 	public static int OUTPUT = 1;
 	public static int INPUT = 0;
@@ -28,6 +27,10 @@ public class Arduino implements SerialPortEventListener {
 	private CommPortIdentifier portId;
 	private SerialPort serial;
 	private OutputStream out;
+	private BufferedReader in;
+	
+	
+	private boolean dataAvailable = false;
 
 	public boolean isConnected() {
 		return isConnected;
@@ -58,9 +61,10 @@ public class Arduino implements SerialPortEventListener {
 		}
 		if (portId != null) {
 			serial.setSerialPortParams(DATA_RATE, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
-			serial.addEventListener(this);
-			serial.notifyOnDataAvailable(true);
+			//serial.addEventListener(this);
+			//serial.notifyOnDataAvailable(true);
 			out = serial.getOutputStream();
+			in = new BufferedReader(new InputStreamReader(serial.getInputStream()));
 			isConnected = true;
 			try {
 				Thread.sleep(500);
@@ -109,9 +113,40 @@ public class Arduino implements SerialPortEventListener {
 		}
 	}
 	
-
-	@Override
-	public void serialEvent(SerialPortEvent serialPortEvent) {
-		
+	public int analogRead(int pin) {
+		if (isConnected) {
+			String data = "R:A:" + pin + "\n";
+			sendData(data);
+			try {
+				int count = 0;
+				while (!in.ready()) {
+					count++;
+					if (count > 10) return -1;
+				}
+				return Integer.parseInt(in.readLine());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return -1;
 	}
+
+	public int digitalRead(int pin) {
+		if (isConnected) {
+			String data = "R:D:" + pin + "\n";
+			sendData(data);
+			try {
+				int count = 0;
+				while (!in.ready()) {
+					count++;
+					if (count > 10) return -1;
+				}
+				return Integer.parseInt(in.readLine());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return -1;
+	}
+	
 }
