@@ -15,7 +15,7 @@ public class Head implements Runnable {
 	Stepper stepperX, stepperY;
 	Servo pen;
 	
-	int penUp = 25, penDown = 100;
+	int penUp = 46, penDown = 40;
 	
 	
 	boolean suspended = false;
@@ -36,6 +36,7 @@ public class Head implements Runnable {
 		stepperX.connect();
 		stepperY.connect();
 		pen.attach();
+		penUp();
 	}
 
 	public void SetPoints(ArrayList<ArrayList<SVGPoint>> pointList) {
@@ -157,7 +158,7 @@ public class Head implements Runnable {
 		}
 	}
 
-	private void penUp() {
+	public void penUp() {
 		pen.write(penUp);
 		try {
 			Thread.sleep(500);
@@ -166,7 +167,7 @@ public class Head implements Runnable {
 		}
 	}
 
-	private void penDown() {
+	public void penDown() {
 		pen.write(penDown);
 		try {
 			Thread.sleep(500);

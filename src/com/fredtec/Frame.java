@@ -31,6 +31,14 @@ public class Frame extends JFrame implements Runnable{
 	JButton stop;
 	JButton pause;
 	
+	JButton stepXPos;
+	JButton stepXNeg;
+	JButton stepYPos;
+	JButton stepYNeg;
+	
+	JButton up;
+	JButton down;
+	
 	JLabel connectStatus;
 	JLabel headX, headY;
 	
@@ -156,6 +164,77 @@ public class Frame extends JFrame implements Runnable{
 		headX.setVisible(true);
 		add(headX);
 
+		stepXNeg = new JButton("Step x: -10");
+		stepXNeg.setBounds(820, 230, 150, 25);
+		stepXNeg.addActionListener(new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Main.head.stepperX.step(-10);
+				Main.head.x -= 10;
+			}
+		});
+		stepXNeg.setVisible(true);
+		add(stepXNeg);
+
+		stepXPos = new JButton("Step x: 10");
+		stepXPos.setBounds(990, 230, 150, 25);
+		stepXPos.addActionListener(new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Main.head.stepperX.step(10);
+				Main.head.x += 10;
+			}
+		});
+		stepXPos.setVisible(true);
+		add(stepXPos);
+
+		stepYNeg = new JButton("Step y: -10");
+		stepYNeg.setBounds(820, 265, 150, 25);
+		stepYNeg.addActionListener(new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Main.head.stepperY.step(-10);
+				Main.head.y -= 10;
+			}
+		});
+		stepYNeg.setVisible(true);
+		add(stepYNeg);
+
+		stepYPos = new JButton("Step y: 10");
+		stepYPos.setBounds(990, 265, 150, 25);
+		stepYPos.addActionListener(new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Main.head.stepperY.step(10);
+				Main.head.y += 10;
+			}
+		});
+		stepYPos.setVisible(true);
+		add(stepYPos);
+
+
+		up = new JButton("Up");
+		up.setBounds(820, 300, 150, 25);
+		up.addActionListener(new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Main.head.penUp();
+			}
+		});
+		up.setVisible(true);
+		add(up);
+
+		up = new JButton("Down");
+		up.setBounds(990, 300, 150, 25);
+		up.addActionListener(new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Main.head.penDown();
+			}
+		});
+		up.setVisible(true);
+		add(up);
+		
 		headY = new JLabel("y: 0");
 		headY.setBounds(1060, 90, 150, 25);
 		headY.setVisible(true);

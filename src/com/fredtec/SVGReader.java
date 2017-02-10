@@ -10,10 +10,14 @@ import org.apache.batik.anim.dom.SVGOMPathElement;
 import org.apache.batik.bridge.*;
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.anim.dom.SVGOMSVGElement;
+import org.apache.batik.dom.svg.SVGOMMatrix;
 import org.apache.batik.dom.svg.SVGOMPoint;
+import org.apache.batik.dom.svg.SVGOMTransform;
+import org.apache.batik.gvt.GraphicsNode;
 import org.apache.batik.util.XMLResourceDescriptor;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.svg.*;
@@ -25,6 +29,10 @@ import org.w3c.dom.svg.*;
 public class SVGReader {
 	private static final String PATH_ELEMENT_NAME = "path";
 
+	
+	int width = 325;
+	int height = 450;
+	
 	private Document svgDocument;
 
 	/**
@@ -41,6 +49,29 @@ public class SVGReader {
 	 * Finds all the path nodes and converts them to a list of lists of points.
 	 */
 	public ArrayList<ArrayList<SVGPoint>> getPoints() {
+		int width = 0, height = 0;
+		Element svg = svgDocument.getDocumentElement();
+		float scale = 1f;
+		if (svg.hasAttribute("width") && svg.hasAttribute("height")) {
+			width = Integer.parseInt(svg.getAttribute("width"));
+			height = Integer.parseInt(svg.getAttribute("height"));
+		} else if (svg.hasAttribute("viewBox")) {
+			String viewBox = svg.getAttribute("viewBox");
+			width = Integer.parseInt(viewBox.split(" ")[2]);
+			height = Integer.parseInt(viewBox.split(" ")[3]);
+		}
+		System.out.println(width + " " + height);
+		if (width != 0 && height != 0) {
+			if (this.width < width) {
+				scale =  (float)this.width / (float)width;
+			}
+			if (this.height < height) {
+				float temp = (float)this.height / (float)height ;
+				if (scale == 1f) scale = temp;
+				else if (temp < scale) scale = temp;
+			}
+		}
+		System.out.println(scale);
 		NodeList pathNodes = getPathElements();
 		int pathNodeCount = pathNodes.getLength();
 		ArrayList<ArrayList<SVGPoint>> pointsList = new ArrayList<>();
@@ -49,26 +80,19 @@ public class SVGReader {
 			SVGOMPathElement node = (SVGOMPathElement)pathNodes.item(iPathNode);
 			SVGTransformList transform = node.getTransform().getAnimVal();
 			float length = node.getTotalLength();
-			SVGMatrix matrix = null;
+			SVGMatrix matrix = new SVGOMTransform().getMatrix();
+			matrix = matrix.scale(scale);
 			if (transform.getNumberOfItems() == 1) {
-				matrix = transform.getItem(0).getMatrix();
+				matrix = matrix.multiply(transform.getItem(0).getMatrix());
 			}
 			for (float i = 0; i < length; i++) {
-				if (matrix != null) {
-					SVGPoint point = node.getPointAtLength(i);
-					point = org.apache.batik.dom.svg.SVGOMPoint.matrixTransform(point, matrix);
-					point = new SVGOMPoint(Math.round(point.getX()), Math.round(point.getY()));
-					if (!points.contains(point)) {
-						points.add(point);	
-					}
+				SVGPoint point = node.getPointAtLength(i);
+				point = org.apache.batik.dom.svg.SVGOMPoint.matrixTransform(point, matrix);
+				point = new SVGOMPoint(Math.round(point.getX()), Math.round(point.getY()));
+				if (!points.contains(point)) {
+					points.add(point);	
 				}
-				else {
-					SVGPoint point = node.getPointAtLength(i);
-					point = new SVGOMPoint(Math.round(point.getX()), Math.round(point.getY()));
-					if (!points.contains(point)) {
-						points.add(point);
-					}	
-				}
+				
 			}
 			pointsList.add(points);
 		}

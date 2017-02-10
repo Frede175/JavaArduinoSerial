@@ -25,7 +25,7 @@ public class Main {
 		frame = new Frame(1200,800);
 		new Thread(frame).start();
 		setup();
-		head = new Head(new Stepper(2,3,4,5,200), new Stepper(6,7,8,9,200), 10);
+		head = new Head(new Stepper(4,6,5,7,200), new Stepper(8,10,9,11,200), 3);
 		head.setSpeed(10);
 		new Thread(head).start();
 		
